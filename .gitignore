@@ -1,17 +1,27 @@
 # Dependencies
 node_modules/
 package-lock.json
+yarn.lock
 
 # Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Environment variables
 .env
+.env.*
 .env.local
 .env.*.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 
 # IDE
 .vscode/
@@ -19,18 +29,48 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+*.sublime-project
+*.sublime-workspace
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Build output (if added in future)
+# Build output
 dist/
+dist-ssr/
 build/
+*.local
 
 # Temporary files
 *.tmp
 .cache/
+.vite/
+.eslintcache
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Documentation (sensitive - public repo)
+CLAUDE.md
 .claude.md
 .CLAUDE.md
-.env*
+DEPLOYMENT.md
+deployment.md
+.deployment.md
+
+# Docker (local dev)
+.dockerignore
+
+# Misc
+*.orig
+*.bak
+*.swp
