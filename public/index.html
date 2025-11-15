@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcribe - Cloud Voice Recorder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <h1>Transcribe</h1>
+            <p class="subtitle">Cloud Voice Recording Platform</p>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        autocomplete="username"
+                        placeholder="Enter your username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                    >
+                </div>
+
+                <div id="loginError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" id="loginButton" class="primary-button">
+                    <span class="button-text">Login</span>
+                </button>
+            </form>
+
+            <div class="info-text">
+                <p>Test credentials:</p>
+                <p><strong>Username:</strong> testuser</p>
+                <p><strong>Password:</strong> testpass123</p>
+            </div>
+        </div>
+
+        <!-- Voice Recorder Screen -->
+        <div id="recorderScreen" class="screen" style="display: none;">
+            <div class="header">
+                <h1>Voice Recorder</h1>
+                <div class="user-info">
+                    <span id="currentUser"></span>
+                    <button id="logoutButton" class="logout-button">Logout</button>
+                </div>
+            </div>
+
+            <p class="subtitle">Push-to-Talk Audio Recording</p>
+
+            <div class="recorder-container">
+                <button id="permissionButton" class="record-button permission-button">
+                    <span class="button-icon">🎤</span>
+                    <span class="button-text">Enable Microphone</span>
+                </button>
+
+                <button id="recordButton" class="record-button" style="display: none;">
+                    <span class="button-icon">🔴</span>
+                    <span class="button-text">Start Recording</span>
+                </button>
+
+                <div id="status" class="status">Click "Enable Microphone" to begin</div>
+
+                <div id="timer" class="timer">00:00</div>
+
+                <div class="audio-visualizer">
+                    <canvas id="visualizer" width="300" height="100"></canvas>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Recent Recordings</h3>
+                <div id="recordingsList" class="recordings-list">
+                    <p class="empty-message">No recordings yet</p>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ul>
+                    <li>Click "Enable Microphone" and allow access when prompted</li>
+                    <li>Click "Start Recording" to begin recording</li>
+                    <li>Click "Stop Recording" to end and save</li>
+                    <li>Recordings are saved automatically to cloud storage</li>
+                </ul>
+            </div>
+
+            <!-- Admin Panel Section -->
+            <div id="admin-section" class="admin-section" style="display: none;">
+                <h2>Admin Panel</h2>
+
+                <div id="admin-status" class="status-message" style="display: none;"></div>
+
+                <!-- User Management -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>User Management</h3>
+                        <div class="admin-actions">
+                            <button id="refresh-users-btn" class="btn-secondary">Refresh</button>
+                            <button onclick="adminPanel.showCreateUserModal()" class="btn-primary">Create User</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Status</th>
+                                    <th>Role</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Session Management -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>Active Sessions</h3>
+                        <div class="admin-actions">
+                            <button id="refresh-sessions-btn" class="btn-secondary">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Created</th>
+                                    <th>Expires</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessions-table-body">
+                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div id="create-user-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New User</h3>
+                <button onclick="adminPanel.hideCreateUserModal()" class="close-button">&times;</button>
+            </div>
+            <form id="create-user-form">
+                <div class="form-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-email">Email</label>
+                    <input type="email" id="new-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password" name="password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="new-full-name">Full Name (Optional)</label>
+                    <input type="text" id="new-full-name" name="full_name">
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="new-is-admin" name="is_admin">
+                        <span>Admin Privileges</span>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="adminPanel.hideCreateUserModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="recorder.js"></script>
+    <script src="admin.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
