@@ -75,12 +75,6 @@ const Login = () => {
           </span>
         </button>
       </form>
-
-      <div className="info-text">
-        <p>Test credentials:</p>
-        <p><strong>Username:</strong> testuser</p>
-        <p><strong>Password:</strong> testpass123</p>
-      </div>
     </div>
   );
 };
