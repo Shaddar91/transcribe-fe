@@ -51,9 +51,11 @@ const AudioRecorder = () => {
       setStatus('Uploading to server...');
       setUploading(true);
 
-      // Generate filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `recording_${timestamp}.wav`;
+      // Generate filename with timestamp in format: audio_YYYY-MM-DD_HH-MM-SS.wav
+      const now = new Date();
+      const datePart = now.toISOString().split('T')[0]; // YYYY-MM-DD
+      const timePart = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+      const filename = `audio_${datePart}_${timePart}.wav`;
 
       // Upload to backend
       const response = await audioAPI.upload(wavBlob, filename);
