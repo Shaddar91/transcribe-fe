@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { audioAPI } from '../services/api';
+import { convertToWav } from '../utils/audioConverter';
 
 const AudioRecorder = () => {
   const {
@@ -42,17 +43,20 @@ const AudioRecorder = () => {
   const handleStopRecording = async () => {
     try {
       setStatus('Stopping recording...');
-      const { blob, extension } = await stopRecording();
+      const { blob } = await stopRecording();
+
+      setStatus('Converting to WAV...');
+      const wavBlob = await convertToWav(blob);
 
       setStatus('Uploading to server...');
       setUploading(true);
 
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `recording_${timestamp}.${extension}`;
+      const filename = `recording_${timestamp}.wav`;
 
       // Upload to backend
-      const response = await audioAPI.upload(blob, filename);
+      const response = await audioAPI.upload(wavBlob, filename);
 
       // Add to recordings list
       const newRecording = {
@@ -61,7 +65,7 @@ const AudioRecorder = () => {
         s3_key: response.s3_key,
         size: response.size,
         timestamp: response.upload_timestamp,
-        blob: blob, // Keep blob for playback
+        blob: wavBlob, // Keep WAV blob for playback
       };
 
       setRecordings((prev) => [newRecording, ...prev]);
